@@ -236,7 +236,7 @@ public:
 	bool			_hurtFromLeft;
 	bool			_hurtFromRight;
 
-	vector<CCLabelBMFont *>	_damageArray;
+	int						_damageDisplayCount = 0;
 	uint32_t				damageEffectCount;
 	PROP_Vector(vector<CharacterBase *>, _monsterArray, MonsterArray);
 
@@ -462,7 +462,7 @@ protected:
 
 	inline void			autoFlip(CharacterBase* attacker);
 
-	void				removeDamageDisplay();
+	void				removeDamageDisplay(CCNode *damageDisplay);
 
 public:
 	bool hasTempAttackValue1() { return getTempAttackValue1() > 0; }

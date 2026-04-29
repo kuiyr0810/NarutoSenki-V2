@@ -1,4 +1,6 @@
 #pragma once
+#include <array>
+#include <memory>
 
 // #include "GameMode/Impl/Regular.hpp"
 #include "GameMode/Impl/1v1.hpp"
@@ -14,7 +16,7 @@
 #include "GameMode/Impl/RandomDeathmatch.hpp"
 
 extern GameMode s_GameMode;
-extern IGameModeHandler *s_ModeHandlers[GameMode::__Internal_Max_Length];
+extern std::array<std::unique_ptr<IGameModeHandler>, GameMode::__Internal_Max_Length> s_ModeHandlers;
 
 inline GameMode getGameMode()
 {
@@ -23,5 +25,5 @@ inline GameMode getGameMode()
 
 inline IGameModeHandler *getGameModeHandler()
 {
-	return s_ModeHandlers[s_GameMode];
+	return s_ModeHandlers[static_cast<size_t>(s_GameMode)].get();
 }

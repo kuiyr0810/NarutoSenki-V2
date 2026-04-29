@@ -46,10 +46,13 @@ public:
 			// 		c->increaseAllCkrs(50000);
 			// 	});
 			isAddCallback = true;
-			getGameLayer()->onHUDInitialized(
-				[&]()
+			auto layer = getGameLayer();
+			layer->onHUDInitialized(
+				[layer]()
 				{
-					for (auto hero : getGameLayer()->_CharacterArray)
+					if (!layer)
+						return;
+					for (auto hero : layer->_CharacterArray)
 					{
 						hero->setCoin(3000);
 						hero->setEXP(2500);
@@ -61,12 +64,12 @@ public:
 
 						if (hero->isPlayer())
 						{
-							getGameLayer()->getHudLayer()->setEXPLose();
-							getGameLayer()->getHudLayer()->coinLabel->setString(to_cstr(hero->getCoin()));
+							layer->getHudLayer()->setEXPLose();
+							layer->getHudLayer()->coinLabel->setString(to_cstr(hero->getCoin()));
 							if (!hero->isEnableSkill04())
-								getGameLayer()->getHudLayer()->skill4Button->setLock();
+								layer->getHudLayer()->skill4Button->setLock();
 							if (!hero->isEnableSkill05())
-								getGameLayer()->getHudLayer()->skill5Button->setLock();
+								layer->getHudLayer()->skill5Button->setLock();
 						}
 					}
 				});

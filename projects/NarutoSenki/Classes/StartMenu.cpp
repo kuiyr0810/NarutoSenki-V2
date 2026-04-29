@@ -1,15 +1,17 @@
 #include "StartMenu.h"
+#include <array>
+#include <memory>
 
 GameMode s_GameMode = GameMode::Classic;
-IGameModeHandler *s_ModeHandlers[GameMode::__Internal_Max_Length] = {
-	new Mode1v1(),
-	new Mode3v3(),
-	new Mode4v4(),
-	new ModeHardCore(),
-	new ModeBoss(),
-	new ModeClone(false),
-	new ModeDeathmatch(),
-	new ModeRandomDeathmatch(),
+std::array<std::unique_ptr<IGameModeHandler>, GameMode::__Internal_Max_Length> s_ModeHandlers = {
+	std::make_unique<Mode1v1>(),
+	std::make_unique<Mode3v3>(),
+	std::make_unique<Mode4v4>(),
+	std::make_unique<ModeHardCore>(),
+	std::make_unique<ModeBoss>(),
+	std::make_unique<ModeClone>(false),
+	std::make_unique<ModeDeathmatch>(),
+	std::make_unique<ModeRandomDeathmatch>(),
 };
 int Cheats = 0;
 bool enableCustomSelect = false;

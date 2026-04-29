@@ -6,12 +6,92 @@
 #include "StartMenu.h"
 #include "Core/Provider.hpp"
 #include "GameMode/GameModeImpl.h"
+#include "Constants/UiFlowKeys.hpp"
+#include "Systems/BattleRuntimeSystem.hpp"
+#include "Systems/SpawnSystem.hpp"
+#include "Systems/SessionState.hpp"
 
 GameLayer *_gLayer = nullptr;
 bool _isFullScreen = false;
 
+void BattleRuntimeSystem::onGameStart(GameLayer *layer, bool skipInitFlogs, float flogSpawnDuration) const
+{
+	if (!layer)
+		return;
+
+	layer->_isStarted = true;
+	layer->getHudLayer()->openingSprite->removeFromParent();
+	layer->getHudLayer()->openingSprite = nullptr;
+	layer->schedule(schedule_selector(GameLayer::updateGameTime), 1.0f);
+	layer->schedule(schedule_selector(GameLayer::checkBackgroundMusic), 2.0f);
+	if (!skipInitFlogs)
+	{
+		layer->schedule(schedule_selector(GameLayer::addFlog), flogSpawnDuration);
+		layer->initFlogs();
+		layer->addFlog(0);
+	}
+
+	layer->setKeyEventHandler();
+	for (auto hero : layer->_CharacterArray)
+	{
+		hero->setWalkSpeed(hero->_originSpeed);
+		if (hero->isCom())
+			hero->doAI();
+	}
+}
+
+void BattleRuntimeSystem::updateGameTime(GameLayer *layer) const
+{
+	if (!layer)
+		return;
+
+	layer->_second += 1;
+	if (layer->_second == 60)
+	{
+		layer->_minute += 1;
+		layer->_second = 0;
+	}
+	auto tempTime = format("{:02d}:{:02d}", layer->_minute, layer->_second);
+	layer->getHudLayer()->gameClock->setString(tempTime.c_str());
+	layer->setTotalTime(layer->getTotalTime() + 1);
+}
+
+void BattleRuntimeSystem::updateViewPoint(GameLayer *layer) const
+{
+	if (!layer || !layer->currentPlayer)
+		return;
+
+	Vec2 playerPoint;
+	if (layer->ougisChar)
+		playerPoint = layer->ougisChar->getPosition();
+	else if (layer->controlChar)
+		playerPoint = layer->controlChar->getPosition();
+	else
+		playerPoint = layer->currentPlayer->getPosition();
+
+	int x = MAX(playerPoint.x, winSize.width / 2);
+	int y = MAX(playerPoint.y, winSize.width / 2);
+	x = MIN(x, (layer->currentMap->getMapSize().width * layer->currentMap->getTileSize().width) - winSize.width / 2);
+	y = MIN(y, (layer->currentMap->getMapSize().height * layer->currentMap->getTileSize().height) - winSize.height / 2);
+	layer->setPosition(Vec2(winSize.width / 2, y) - Vec2(x, y));
+}
+
+void SpawnSystem::initMatchUnits(GameLayer *layer) const
+{
+	if (!layer)
+		return;
+	layer->initTileMap();
+	if (!layer->currentMap)
+		return;
+	layer->initEffects();
+}
+
 GameLayer::GameLayer()
 {
+	_battleRuntimeSystem = std::make_unique<BattleRuntimeSystem>();
+	_spawnSystem = std::make_unique<SpawnSystem>();
+	_sessionState = std::make_unique<SessionState>();
+
 	mapId = 0;
 
 	_isAttackButtonRelease = true;
@@ -172,7 +252,7 @@ void GameLayer::initGard()
 
 void GameLayer::initHeros()
 {
-	initTileMap();
+	_spawnSystem->initMatchUnits(this);
 	if (currentMap == nullptr)
 	{
 		// initTileMap() failed (e.g. no map asset bundled). The error has
@@ -180,7 +260,6 @@ void GameLayer::initHeros()
 		// instead of dereferencing the null tilemap below.
 		return;
 	}
-	initEffects();
 
 	addSprites("UI/hpBar/hpBar.plist");
 
@@ -248,6 +327,8 @@ void GameLayer::initHeros()
 		i++;
 	}
 
+	// Tower HP bar color depends on currentPlayer group, so towers must be
+	// initialized after at least one hero/player is created.
 	initTower();
 
 	schedule(schedule_selector(GameLayer::updateViewPoint), 0.00f);
@@ -302,28 +383,7 @@ void GameLayer::playGameOpeningAnimation(float dt)
 void GameLayer::onGameStart(float dt)
 {
 	auto handler = getGameModeHandler();
-	_isStarted = true;
-
-	getHudLayer()->openingSprite->removeFromParent();
-	getHudLayer()->openingSprite = nullptr;
-	schedule(schedule_selector(GameLayer::updateGameTime), 1.0f);
-	schedule(schedule_selector(GameLayer::checkBackgroundMusic), 2.0f);
-	if (!handler->skipInitFlogs)
-	{
-		schedule(schedule_selector(GameLayer::addFlog), handler->flogSpawnDuration);
-		initFlogs();
-		addFlog(0);
-	}
-
-	setKeyEventHandler();
-
-	for (auto hero : _CharacterArray)
-	{
-		// NOTE: Resume movement speed
-		hero->setWalkSpeed(hero->_originSpeed);
-		if (hero->isCom())
-			hero->doAI();
-	}
+	_battleRuntimeSystem->onGameStart(this, handler->skipInitFlogs, handler->flogSpawnDuration);
 
 	getGameModeHandler()->onGameStart();
 }
@@ -458,48 +518,12 @@ void GameLayer::initEffects()
 
 void GameLayer::updateGameTime(float dt)
 {
-	_second += 1;
-	if (_second == 60)
-	{
-		_minute += 1;
-		_second = 0;
-	}
-	auto tempTime = format("{:02d}:{:02d}", _minute, _second);
-	_hudLayer->gameClock->setString(tempTime.c_str());
-
-	uint32_t newTime = getTotalTime() + 1;
-	setTotalTime(newTime);
+	_battleRuntimeSystem->updateGameTime(this);
 }
 
 void GameLayer::updateViewPoint(float dt)
 {
-	if (!currentPlayer)
-		return;
-	Vec2 playerPoint;
-	if (ougisChar)
-	{
-		playerPoint = ougisChar->getPosition();
-	}
-	else if (controlChar)
-	{
-		playerPoint = controlChar->getPosition();
-	}
-	else
-	{
-		playerPoint = currentPlayer->getPosition();
-	}
-
-	int x = MAX(playerPoint.x, winSize.width / 2);
-	int y = MAX(playerPoint.y, winSize.width / 2);
-	x = MIN(x, (currentMap->getMapSize().width * currentMap->getTileSize().width) - winSize.width / 2);
-	y = MIN(y, (currentMap->getMapSize().height * currentMap->getTileSize().height) - winSize.height / 2);
-
-	Vec2 actualPoint = Vec2(x, y);
-	Vec2 centerPoint = Vec2(winSize.width / 2, y);
-	Vec2 viewPoint = centerPoint - actualPoint;
-
-	setPosition(viewPoint);
-	// Director::sharedDirector()->getScheduler()->setTimeScale(1.0f);
+	_battleRuntimeSystem->updateViewPoint(this);
 }
 
 void GameLayer::setTowerState(int charId)
@@ -805,7 +829,7 @@ void GameLayer::onLeft()
 
 	SimpleAudioEngine::sharedEngine()->end();
 
-	lua_call_func("onGameOver");
+	lua_call_func(UiFlowKeys::kOnGameOver);
 }
 
 void GameLayer::checkBackgroundMusic(float dt)

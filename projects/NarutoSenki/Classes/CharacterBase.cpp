@@ -1499,7 +1499,7 @@ void CharacterBase::removeCoinDisplay(Sprite *coinDisplay)
 
 void CharacterBase::setDamgeDisplay(int value, const char *font)
 {
-	if (_damageArray.size() < 6)
+	if (_damageDisplayCount < 6)
 	{
 		auto damageFont = CCLabelBMFont::create(to_cstr(value), font);
 		damageFont->setAnchorPoint(Vec2(0.5, 0.5));
@@ -1516,10 +1516,10 @@ void CharacterBase::setDamgeDisplay(int value, const char *font)
 		}
 
 		getGameLayer()->addChild(damageFont, kNumberOrder);
-		_damageArray.push_back(damageFont);
+		_damageDisplayCount++;
 
 		auto sd = ScaleBy::create(0.2f, 0.5f);
-		auto call = CallFunc::create(std::bind(&CharacterBase::removeDamageDisplay, this));
+		auto call = CCCallFuncN::create(this, callfuncN_selector(CharacterBase::removeDamageDisplay));
 		auto mv = MoveBy::create(0.4f, Vec2(0, 12));
 		auto fadeOut = FadeOut::create(0.4f);
 		auto sp = Spawn::create(fadeOut, mv, nullptr);
@@ -1528,13 +1528,16 @@ void CharacterBase::setDamgeDisplay(int value, const char *font)
 	}
 }
 
-void CharacterBase::removeDamageDisplay()
+void CharacterBase::removeDamageDisplay(CCNode *damageDisplay)
 {
-	if (_damageArray.size() > 0)
+	if (damageDisplay)
 	{
-		auto damageFont = _damageArray.at(0);
-		damageFont->removeFromParent();
-		_damageArray.erase(_damageArray.begin());
+		damageDisplay->removeFromParent();
+	}
+
+	if (_damageDisplayCount > 0)
+	{
+		_damageDisplayCount--;
 	}
 }
 

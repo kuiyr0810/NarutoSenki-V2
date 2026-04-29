@@ -1,5 +1,6 @@
 #include "CreditsLayer.h"
 #include "StartMenu.h"
+#include "Constants/UiFlowKeys.hpp"
 
 bool CreditsLayer::init()
 {
@@ -84,7 +85,7 @@ void CreditsLayer::keyBackClicked()
 {
 	setKeypadEnabled(false);
 
-	lua_call_func("CreditsLayer_BackToStartMenu")
+	lua_call_func(UiFlowKeys::kCreditsBackToStartMenu);
 }
 
 void CreditsLayer::onReturnBtn(Ref *sender)

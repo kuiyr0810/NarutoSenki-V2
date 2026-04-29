@@ -1,5 +1,6 @@
 #include <time.h>
 #include "StartMenu.h"
+#include "Constants/UiFlowKeys.hpp"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include <jni.h>
@@ -56,5 +57,5 @@ void SelectLayer::keyBackClicked()
 {
 	setKeypadEnabled(false);
 
-	lua_call_func("backToStartMenu");
+	lua_call_func(UiFlowKeys::kBackToStartMenu);
 }

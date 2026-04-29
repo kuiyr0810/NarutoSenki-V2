@@ -1,6 +1,7 @@
 #include "StartMenu.h"
 #include "UI/GameModeLayer.h"
 #include "UI/ModeMenuButton.hpp"
+#include "Constants/UiFlowKeys.hpp"
 
 extern const GameData kDefaultGameData;
 
@@ -194,7 +195,7 @@ void GameModeLayer::selectMode(GameMode mode)
 		// call lua global function StartMenu.enterSelectLayer
 		auto pStack = get_luastack;
 		auto state = pStack->getLuaState();
-		lua_getglobal(state, "enterSelectLayer");
+		lua_getglobal(state, UiFlowKeys::kEnterSelectLayer);
 		pStack->pushInt(mode);
 		pStack->pushBoolean(enableCustomSelect);
 		pStack->executeFunction(2);

@@ -73,7 +73,9 @@ public:
 
 	void setHPbar()
 	{
-		if (getGroup() != getGameLayer()->currentPlayer->getGroup())
+		auto layer = getGameLayer();
+		auto player = layer ? layer->currentPlayer : nullptr;
+		if (!player || getGroup() != player->getGroup())
 			_hpBar = HPBar::create("hp_bar_r.png");
 		else
 			_hpBar = HPBar::create("hp_bar.png");

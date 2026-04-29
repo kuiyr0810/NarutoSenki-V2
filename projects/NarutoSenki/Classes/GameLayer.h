@@ -3,6 +3,7 @@
 #include "GearLayer.h"
 #include "PauseLayer.h"
 #include "Data/UnitData.h"
+#include <memory>
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #include "glfw3.h"
@@ -32,6 +33,9 @@ class Flog;
 class Tower;
 class GameLayer;
 class HudLayer;
+class BattleRuntimeSystem;
+class SpawnSystem;
+struct SessionState;
 
 extern GameLayer *_gLayer;
 extern bool _isFullScreen;
@@ -49,6 +53,7 @@ class GameLayer : public Layer
 	using OnHUDInitializedCallback = std::function<void()>;
 
 	friend class LoadLayer;
+	friend class BattleRuntimeSystem;
 
 public:
 	GameLayer();
@@ -197,6 +202,10 @@ private:
 	bool isHUDInitialized = false;
 	bool is4V4Mode = false;
 	vector<OnHUDInitializedCallback> callbackssList;
+
+	std::unique_ptr<BattleRuntimeSystem> _battleRuntimeSystem;
+	std::unique_ptr<SpawnSystem> _spawnSystem;
+	std::unique_ptr<SessionState> _sessionState;
 };
 
 #define BIND(funcName) std::bind(&funcName, this)
