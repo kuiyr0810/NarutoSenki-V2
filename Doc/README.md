@@ -160,6 +160,48 @@ or
 
 - Run `build.bat`
 
+### macOS
+
+Requires **Xcode** and **Python 3** (to run the Xcode patch utility).
+
+From the repository root:
+
+1. Build **LuaJIT** as a static library (outputs `scripting/lua/luajit/mac/libluajit.a`).
+   Clone [LuaJIT](https://github.com/LuaJIT/LuaJIT) into `scripting/lua/luajit/LuaJIT`, then run:
+
+```bash
+cd scripting/lua/luajit
+./build_mac_luajit.sh
+```
+
+2. Patch the Xcode project so it links Naruto Senki gameplay and Lua scripting sources:
+
+```bash
+python3 tools/patch_mac_xcode.py
+```
+
+3. Open `projects/NarutoSenki/proj.mac/hello.xcodeproj` in Xcode.
+
+If the build fails because **`external/imgui/...` is missing**, the cocos2dx Mac project may still reference Dear ImGui (not shipped in this repo; ImGui is off in `EAGLView.mm`). Run once from the repo root:
+
+```bash
+python3 tools/strip_imgui_from_cocos2dx_mac_xcode.py
+```
+
+If Xcode reports **missing `external/chipmunk/...` or `CMakeLists.txt` under Chipmunk** (template points to vendored physics that is not in this tree), run once:
+
+```bash
+python3 tools/strip_chipmunk_from_hello_mac_xcode.py
+```
+
+4. Add **folder references** (blue folders) for `projects/NarutoSenki/Resources` and `projects/NarutoSenki/lua` to the application target so they are copied into `.app/Contents/Resources/` (needed for gameplay assets and Lua at runtime).
+
+5. Optional: rename the Xcode target/product from `hello` to `Naruto Senki`; set **C++ language dialect** to C++17 or C++20 to match other desktop builds; set **macOS Deployment Target** to **11.0** or newer if Xcode warns (the project is updated to **11.0** in tree).
+
+```bash
+xcodebuild -project projects/NarutoSenki/proj.mac/hello.xcodeproj -scheme hello -configuration Debug
+```
+
 ## Structure
 
 ```
@@ -212,7 +254,7 @@ root: projects/NarutoSenki
   - proj.android-studio : Android project
   - proj.ios : IOS project (Not support)
   - proj.linux : Linux project
-  - proj.mac : MAC project (Not support)
+  - proj.mac : macOS (Xcode) — see **How to build › macOS**
   - proj.win32 : Windows project
   - Resources
   - sprites : Unused assets

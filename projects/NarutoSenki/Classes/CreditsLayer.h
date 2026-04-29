@@ -11,5 +11,6 @@ public:
 private:
 	void onEnterTransitionDidFinish();
 
+	void onReturnBtn(Ref *sender);
 	void keyBackClicked();
 };

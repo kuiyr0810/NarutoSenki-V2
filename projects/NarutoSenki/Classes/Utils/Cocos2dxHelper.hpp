@@ -3,7 +3,7 @@
 #include "../../../scripting/lua/cocos2dx_support/CCLuaEngine.h"
 #include "Utils/CCDeprecated.h"
 
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 #include <format>
 #else
 #define FMT_HEADER_ONLY
@@ -75,17 +75,17 @@ static inline SpriteFrame *getSpriteFrame(const string &name)
 	return SpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(name.c_str());
 }
 
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 
 template <class... _Types>
-static inline SpriteFrame *getSpriteFrame(const string_view _Fmt, const _Types &..._Args)
+static inline SpriteFrame *getSpriteFrame(std::format_string<_Types...> _Fmt, _Types &&..._Args)
 {
-	return getSpriteFrame(format(_Fmt, _Args...));
+	return getSpriteFrame(std::format(_Fmt, std::forward<_Types>(_Args)...));
 }
 
 #else
 
-// Use fmt lib for not support c++ 20 std::format platform
+// Use fmt lib for platforms without C++20 std::format support
 
 template <class... _Types>
 static inline SpriteFrame *getSpriteFrame(fmt::format_string<_Types...> _Fmt, _Types &&..._Args)

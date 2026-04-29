@@ -69,10 +69,10 @@ void CCScrewItem::onExit()
 	Director::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
 }
 
-Rect CCScrewItem::getRect2()
+CCRect CCScrewItem::getRect2()
 {
-	Size size = getContentSize();
-	return Rect(0, 0, size.width, size.height);
+	CCSize size = getContentSize();
+	return CCRect(0, 0, size.width, size.height);
 }
 
 bool CCScrewItem::containsTouchLocation(Touch *touch)

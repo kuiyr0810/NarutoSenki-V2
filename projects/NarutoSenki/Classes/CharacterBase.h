@@ -432,8 +432,8 @@ protected:
 	void				removeSelf(float dt);
 	void				setJump(bool jumpDirection);
 
-	Rect				setHalfBox();
-	Rect				setHitBox();
+	CCRect				setHalfBox();
+	CCRect				setHitBox();
 
 	void				checkActionFinish(float dt);
 

@@ -31,10 +31,10 @@ void GearButton::onExit()
 	Director::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
 }
 
-Rect GearButton::getRect()
+CCRect GearButton::getRect()
 {
-	Size size = getContentSize();
-	return Rect(0, 0, size.width, size.height);
+	CCSize size = getContentSize();
+	return CCRect(0, 0, size.width, size.height);
 }
 
 bool GearButton::containsTouchLocation(Touch *touch)
@@ -281,7 +281,7 @@ bool GearLayer::init(RenderTexture *snapshoot)
 	gearDetail->setPosition(Vec2(gears_bg->getPositionX() + gears_bg->getContentSize().width / 2 - 54, 210));
 	addChild(gearDetail, 600);
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX) || (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX) || (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 	gearBigIcon = Sprite::createWithSpriteFrameName("gear_00.png");
 	gearBigIcon->setAnchorPoint(Vec2(0.5f, 0));
 	gearBigIcon->setPosition(Vec2(gears_bg->getPositionX() + gears_bg->getContentSize().width / 2 - 54, 90));

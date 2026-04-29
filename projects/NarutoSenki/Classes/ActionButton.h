@@ -24,7 +24,7 @@ public:
 
 	bool init(const string &szImage);
 	bool isCanClick();
-	Rect getRect();
+	CCRect getRect();
 
 	void click();
 	void setMarkSprite(const char *mark);

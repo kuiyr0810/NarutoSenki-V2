@@ -54,17 +54,17 @@ DEBUG_NS_BEGIN
 #define LOG_WARN LOG_YELLOW
 #define LOG_INFO LOG_GREEN
 
-#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_MAC
 
 template <class... _Types>
-static inline void NSLOG(const string_view _Fmt, const _Types &..._Args)
+static inline void NSLOG(std::format_string<_Types...> _Fmt, _Types &&..._Args)
 {
-	puts(format(_Fmt, _Args...).c_str());
+	puts(std::format(_Fmt, std::forward<_Types>(_Args)...).c_str());
 }
 
 #else
 
-// Use fmt lib for not support c++ 20 std::format platform
+// Use fmt lib for platforms without C++20 std::format support
 
 template <class... _Types>
 static inline void NSLOG(fmt::format_string<_Types...> _Fmt, _Types &&..._Args)

@@ -4,7 +4,7 @@
 
 ## Documentation
 
-[English](Doc/README.md)
+English (includes **Linux, Windows, Android, macOS** build steps): **[Doc/README.md](Doc/README.md)**
 
 [简体中文](Doc/README_ZH.md)
 

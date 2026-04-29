@@ -24,22 +24,31 @@
 
 #include "platform/CCImage.h"
 #include "textures/CCTexture2D.h"
-#if defined(__native_client__) || defined(EMSCRIPTEN)
-// TODO(sbc): I'm pretty sure all platforms should be including
-// webph headers in this way.
-#include "webp/decode.h"
-#else
-#include "decode.h"
-#endif
 #include "ccMacros.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
+#if defined(__native_client__) || defined(EMSCRIPTEN)
+// TODO(sbc): I'm pretty sure all platforms should be including
+// webp headers in this way.
+#include "webp/decode.h"
+#else
+#include "decode.h"
+#endif
+#endif
+
 NS_CC_BEGIN
 
 bool CCImage::_initWithWebpData(void *pData, int nDataLen)
 {
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+    // mac third-party libwebp archive in this repo is x86-only; disable webp decode.
+    CC_UNUSED_PARAM(pData);
+    CC_UNUSED_PARAM(nDataLen);
+    return false;
+#else
 	bool bRet = false;
 	do
 	{
@@ -72,6 +81,7 @@ bool CCImage::_initWithWebpData(void *pData, int nDataLen)
         bRet = true;
 	} while (0);
 	return bRet;
+#endif
 }
 
 NS_CC_END

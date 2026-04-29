@@ -33,10 +33,10 @@ public:
 		Director::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
 	}
 
-	Rect getRect()
+	CCRect getRect()
 	{
-		Size size = getContentSize();
-		return Rect(0, 0, size.width, size.height);
+		CCSize size = getContentSize();
+		return CCRect(0, 0, size.width, size.height);
 	}
 
 	bool ccTouchBegan(Touch *touch, Event *event)

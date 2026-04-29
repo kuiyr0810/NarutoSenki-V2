@@ -37,6 +37,55 @@ using namespace cocos2d;
 using namespace cocos2d::extension;
 using namespace CocosDenshion;
 
+// OpenGL ES constants not available on macOS desktop OpenGL
+#if CC_TARGET_PLATFORM == CC_PLATFORM_MAC
+#ifndef GL_FIXED
+#  define GL_FIXED 0x140C
+#endif
+#ifndef GL_MAX_VERTEX_UNIFORM_VECTORS
+#  define GL_MAX_VERTEX_UNIFORM_VECTORS 0x8DFB
+#endif
+#ifndef GL_MAX_VARYING_VECTORS
+#  define GL_MAX_VARYING_VECTORS 0x8DFC
+#endif
+#ifndef GL_MAX_FRAGMENT_UNIFORM_VECTORS
+#  define GL_MAX_FRAGMENT_UNIFORM_VECTORS 0x8DFD
+#endif
+#ifndef GL_IMPLEMENTATION_COLOR_READ_TYPE
+#  define GL_IMPLEMENTATION_COLOR_READ_TYPE 0x8B9A
+#endif
+#ifndef GL_IMPLEMENTATION_COLOR_READ_FORMAT
+#  define GL_IMPLEMENTATION_COLOR_READ_FORMAT 0x8B9B
+#endif
+#ifndef GL_SHADER_COMPILER
+#  define GL_SHADER_COMPILER 0x8DFA
+#endif
+#ifndef GL_SHADER_BINARY_FORMATS
+#  define GL_SHADER_BINARY_FORMATS 0x8DF8
+#endif
+#ifndef GL_NUM_SHADER_BINARY_FORMATS
+#  define GL_NUM_SHADER_BINARY_FORMATS 0x8DF9
+#endif
+#ifndef GL_LOW_FLOAT
+#  define GL_LOW_FLOAT 0x8DF0
+#endif
+#ifndef GL_MEDIUM_FLOAT
+#  define GL_MEDIUM_FLOAT 0x8DF1
+#endif
+#ifndef GL_HIGH_FLOAT
+#  define GL_HIGH_FLOAT 0x8DF2
+#endif
+#ifndef GL_LOW_INT
+#  define GL_LOW_INT 0x8DF3
+#endif
+#ifndef GL_MEDIUM_INT
+#  define GL_MEDIUM_INT 0x8DF4
+#endif
+#ifndef GL_HIGH_INT
+#  define GL_HIGH_INT 0x8DF5
+#endif
+#endif // CC_PLATFORM_MAC
+
 
 
 #include "LuaCocos2d.h"

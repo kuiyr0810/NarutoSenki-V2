@@ -20,7 +20,7 @@ bool CCStrokeLabel::init()
 		float strokeSize = getStrokeSize();
 		// float fontSize = m_fontSize - 2 * strokeSize;
 		// m_label = CCLabelTTF::labelWithString(m_str.c_str(), m_font.c_str(), m_fontSize);
-		Size textureSize = m_label->getContentSize();
+		CCSize textureSize = m_label->getContentSize();
 		textureSize.width += 2 * strokeSize;
 		textureSize.height += 2 * strokeSize;
 		// call to clear error

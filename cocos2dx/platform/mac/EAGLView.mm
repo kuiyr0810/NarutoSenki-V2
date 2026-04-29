@@ -40,7 +40,7 @@ THE SOFTWARE.
 #import "CCEventDispatcher.h"
 #import "CCEGLView.h"
 
-#define CC_USE_IMGUI 1
+#define CC_USE_IMGUI 0
 
 // imgui
 #if CC_USE_IMGUI > 0
@@ -60,7 +60,7 @@ do {    \
     }   \
 } while(0);
 #else
-#define DISPATCH_EVENT_TO_IMGUI(event, obj) do {} while(0);
+#define DISPATCH_EVENT_TO_IMGUI(__event__) do {} while(0);
 #endif // CC_USE_IMGUI
 
 
@@ -104,6 +104,17 @@ static EAGLView *view;
 		if( context )
 			[self setOpenGLContext:context];
 
+		// Force the OpenGL context to be created and made current immediately so that
+		// any GL calls performed during AppDelegate::applicationDidFinishLaunching
+		// (e.g. CCShaderCache loading default shaders from CCDirector::setOpenGLView)
+		// have a valid current context. Without this, glCreateProgram() returns 0 and
+		// CCGLProgram::link asserts on macOS because prepareOpenGL is normally invoked
+		// only right before the first draw.
+		NSOpenGLContext *glContext = [self openGLContext];
+		if (glContext) {
+			[glContext makeCurrentContext];
+		}
+
 		// event delegate
 		eventDelegate_ = [CCEventDispatcher sharedDispatcher];
 	}
@@ -134,6 +145,13 @@ static EAGLView *view;
 	view = self;
     
     [super initWithFrame:frameRect pixelFormat:format];
+
+    // See note in initWithFrame:shareContext: -- the GL context must be current
+    // before any cocos2d-x GL initialization runs.
+    NSOpenGLContext *glContext = [self openGLContext];
+    if (glContext) {
+        [glContext makeCurrentContext];
+    }
 
 #if CC_USE_IMGUI > 0
     [self setupImGui];
@@ -349,16 +367,11 @@ static EAGLView *view;
 #define DISPATCH_EVENT(__event__, __selector__) [eventDelegate_ queueEvent:__event__ selector:__selector__];
 #else
 #define DISPATCH_EVENT(__event__, __selector__)												\
-ImGui_ImplOSX_HandleEvent(__event__, self);  \
-bool inImGuiWidgets = ImGui::IsAnyWindowHovered();  \
-if (!inImGuiWidgets) \
-{   \
-	id obj = eventDelegate_;																\
-	[obj performSelector:__selector__														\
-			onThread:[(cocos2d::CCDirector*)[CCDirector sharedDirector] runningThread]			\
-		  withObject:__event__																\
-	   waitUntilDone:NO];   \
-}
+id obj = eventDelegate_;																		\
+[obj performSelector:__selector__															\
+		onThread:[(cocos2d::CCDirector*)[CCDirector sharedDirector] runningThread]			\
+	  withObject:__event__																	\
+   waitUntilDone:NO];
 #endif
 
 #pragma mark EAGLView - Mouse events

@@ -28,7 +28,7 @@ public:
 	PROP(StartMenu *, _startMenu, Delegate);
 
 	bool init(const char *szImage);
-	Rect getRect();
+	CCRect getRect();
 	void setBtnType(MenuButtonType type);
 	MenuButtonType getBtnType();
 	void playSound();

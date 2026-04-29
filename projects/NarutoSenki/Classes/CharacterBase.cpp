@@ -332,7 +332,7 @@ void CharacterBase::update(float dt)
 					int metaHeight = 128;
 					int metaX = tower->getPositionX() - metaWidth / 2;
 					int metaY = tower->getPositionY() - metaHeight / 2;
-					Rect rect = Rect(metaX, metaY + 32, metaWidth, metaHeight - 64);
+					CCRect rect = CCRect(metaX, metaY + 32, metaWidth, metaHeight - 64);
 
 					if (rect.containsPoint(_desiredPosition))
 					{
@@ -1232,18 +1232,18 @@ void CharacterBase::setOugis()
 	getGameLayer()->setOugis(this);
 }
 
-Rect CharacterBase::setHalfBox()
+CCRect CharacterBase::setHalfBox()
 {
-	Rect halfbox = Rect(_isFlipped ? getPositionX() - getContentSize().width / 2 : getPositionX(),
+	CCRect halfbox = CCRect(_isFlipped ? getPositionX() - getContentSize().width / 2 : getPositionX(),
 						getPositionY() + getContentSize().height / 2,
 						getContentSize().width / 2,
 						getContentSize().height / 2);
 	return halfbox;
 }
 
-Rect CharacterBase::setHitBox()
+CCRect CharacterBase::setHitBox()
 {
-	Rect hitbox = boundingBox();
+	CCRect hitbox = boundingBox();
 	return hitbox;
 }
 

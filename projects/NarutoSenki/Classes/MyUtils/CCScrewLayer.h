@@ -35,7 +35,7 @@ protected:
 	void onExit();
 	bool ccTouchBegan(Touch *touch, Event *event);
 	void ccTouchEnded(Touch *touch, Event *event);
-	Rect getRect2();
+	CCRect getRect2();
 
 	inline bool containsTouchLocation(Touch *touch);
 };

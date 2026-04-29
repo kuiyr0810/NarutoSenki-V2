@@ -52,10 +52,10 @@ void MenuButton::onExit()
 	Director::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
 }
 
-Rect MenuButton::getRect()
+CCRect MenuButton::getRect()
 {
-	Size size = getContentSize();
-	return Rect(0, 0, size.width, size.height);
+	CCSize size = getContentSize();
+	return CCRect(0, 0, size.width, size.height);
 }
 
 bool MenuButton::containsTouchLocation(Touch *touch)
@@ -391,16 +391,6 @@ void StartMenu::update(float dt)
 {
 	if (!noticeLabel)
 		return;
-
-	float lableX = noticeLabel->getContentSize().width;
-	if (noticeLabel->getPositionX() >= -lableX)
-	{
-		noticeLabel->setPositionX(noticeLabel->getPositionX() - 0.6f);
-	}
-	else
-	{
-		noticeLabel->setPositionX(190);
-	}
 }
 
 void StartMenu::setNotice()
@@ -424,7 +414,7 @@ void StartMenu::setNotice()
 		noticeLabel = CCLabelTTF::create(reply, FONT_NAME, 12);
 		noticeLabel->setAnchorPoint(Vec2(0, 0));
 		clipper->addChild(noticeLabel);
-		clipper->setPosition(Vec2(35, 228));
+		clipper->setPosition(Vec2(30, 228));
 
 		notice_layer->addChild(clipper);
 

@@ -23,7 +23,7 @@ public:
 	CCLabelBMFont *coinLabel = nullptr;
 
 	Sprite *gearDetail = nullptr;
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX) || (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX) || (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 	Sprite *gearBigIcon;
 #endif
 	Sprite *gears_bg = nullptr;
@@ -52,7 +52,7 @@ public:
 	Sprite *soIcon;
 	PROP(GearLayer *, _delegate, Delegate);
 
-	Rect getRect();
+	CCRect getRect();
 	void setBtnType(GearType type, GearButtonType btnType, bool isBuyed);
 	GearType getBtnType();
 	void playSound();

@@ -58,6 +58,16 @@ bool CreditsLayer::init()
 	credit02->setPosition(Vec2(winSize.width / 2 + 15, winSize.height / 2 - 60));
 	addChild(credit02);
 
+	auto returnBtnItem = MenuItemSprite::create(
+		Sprite::create("UI/return_btn.png"),
+		nullptr,
+		nullptr,
+		this,
+		menu_selector(CreditsLayer::onReturnBtn));
+	auto returnBtnMenu = Menu::create(returnBtnItem, nullptr);
+	returnBtnMenu->setPosition(winSize.width - 38, 65);
+	addChild(returnBtnMenu, 5);
+
 	if (UserDefault::sharedUserDefault()->getBoolForKey("isBGM"))
 		SimpleAudioEngine::sharedEngine()->playBackgroundMusic(CREDITS_MUSIC, true);
 
@@ -75,4 +85,10 @@ void CreditsLayer::keyBackClicked()
 	setKeypadEnabled(false);
 
 	lua_call_func("CreditsLayer_BackToStartMenu")
+}
+
+void CreditsLayer::onReturnBtn(Ref *sender)
+{
+	(void)sender;
+	keyBackClicked();
 }

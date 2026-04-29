@@ -59,7 +59,11 @@ typedef CCTMXObjectGroup TMXObjectGroup;
 typedef CCTMXTiledMap TMXTiledMap;
 typedef CCEGLView GLView;
 typedef CCPoint Vec2;
+// macOS system headers already define global `Size`/`Rect` typedefs.
+// Avoid redefining them on macOS to prevent conflicts with MacTypes.
+#if CC_TARGET_PLATFORM != CC_PLATFORM_MAC
 typedef CCSize Size;
 typedef CCRect Rect;
+#endif
 typedef ccColor3B Color3B;
 typedef CCLuaEngine LuaEngine;

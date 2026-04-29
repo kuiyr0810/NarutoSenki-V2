@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'hello' in project 'hello'
+➜ Explicit dependency on target 'cocos2dx' in project 'cocos2dx'
+Target 'cocos2dx' in project 'cocos2dx' (no dependencies)

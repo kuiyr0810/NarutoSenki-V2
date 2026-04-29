@@ -153,8 +153,8 @@ public:
 	bool _isPause;
 	GearLayer *_gearLayer;
 
-	inline void clearAllFlogsMainTarget(CharacterBase *target);
-	inline void clearAllUnitsMainTarget(CharacterBase *target);
+	void clearAllFlogsMainTarget(CharacterBase *target);
+	void clearAllUnitsMainTarget(CharacterBase *target);
 
 	CREATE_FUNC(GameLayer);
 	static bool checkHasAnyMovement();

@@ -234,44 +234,72 @@ bool CCFileUtilsMac::isFileExist(const std::string& strFilePath)
     {
         return false;
     }
-    
-    bool bRet = false;
-    
-    if (strFilePath[0] != '/')
+
+    if (strFilePath[0] == '/')
+    {
+        // Absolute path: just ask the filesystem.
+        return [s_fileManager fileExistsAtPath:[NSString stringWithUTF8String:strFilePath.c_str()]] ? true : false;
+    }
+
+    // 1) Standard NSBundle resource lookup (covers files placed directly under
+    //    Contents/Resources/ such as Info.plist or top-level images).
     {
         std::string path = strFilePath;
         std::string file;
         size_t pos = path.find_last_of("/");
+
         if (pos != std::string::npos)
         {
-            file = path.substr(pos+1);
-            path = path.substr(0, pos+1);
-            NSString* fullpath = [[NSBundle mainBundle] pathForResource:[NSString stringWithUTF8String:file.c_str()]
-                                                                 ofType:nil
-                                                            inDirectory:[NSString stringWithUTF8String:path.c_str()]];
-            if (fullpath != nil) {
-                bRet = true;
-            }
+            file = path.substr(pos + 1);
+            path = path.substr(0, pos); // trim trailing '/'
+        }
+        else
+        {
+            file = path;
+            path.clear();
+        }
+
+        NSString* nsFile = [NSString stringWithUTF8String:file.c_str()];
+        NSString* nsDir = path.empty() ? nil : [NSString stringWithUTF8String:path.c_str()];
+        if ([[NSBundle mainBundle] pathForResource:nsFile ofType:nil inDirectory:nsDir] != nil)
+        {
+            return true;
         }
     }
-    else
+
+    // 2) Fall back to the registered search paths. NSBundle's pathForResource:
+    //    only walks Contents/Resources/ directly, so blue-folder references
+    //    nested under Contents/Resources/<sub>/ (e.g. Resources/Resources/Maps/)
+    //    would otherwise be invisible to game code that calls isFileExist().
+    const std::vector<std::string>& searchPaths = getSearchPaths();
+    for (std::vector<std::string>::const_iterator it = searchPaths.begin(); it != searchPaths.end(); ++it)
     {
-        // Search path is an absolute path.
-        if ([s_fileManager fileExistsAtPath:[NSString stringWithUTF8String:strFilePath.c_str()]]) {
-            bRet = true;
+        const std::string& base = *it;
+        if (base.empty() || base[0] != '/')
+            continue;
+
+        std::string fullPath = base + strFilePath;
+        if ([s_fileManager fileExistsAtPath:[NSString stringWithUTF8String:fullPath.c_str()]])
+        {
+            return true;
         }
     }
-    
-    return bRet;
+
+    return false;
 }
 
 std::string CCFileUtilsMac::getFullPathForDirectoryAndFilename(const std::string& strDirectory, const std::string& strFilename)
 {
-    if (strDirectory[0] != '/')
+    if (!strDirectory.empty() && strDirectory[0] != '/')
     {
+        std::string dir = strDirectory;
+        while (!dir.empty() && dir.back() == '/')
+            dir.pop_back();
+
+        NSString* nsDir = dir.empty() ? nil : [NSString stringWithUTF8String:dir.c_str()];
         NSString* fullpath = [[NSBundle mainBundle] pathForResource:[NSString stringWithUTF8String:strFilename.c_str()]
                                                              ofType:nil
-                                                        inDirectory:[NSString stringWithUTF8String:strDirectory.c_str()]];
+                                                        inDirectory:nsDir];
         if (fullpath != nil) {
             return [fullpath UTF8String];
         }

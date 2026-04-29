@@ -108,11 +108,16 @@ void CCConfiguration::dumpInfo(void) const
 
 void CCConfiguration::gatherGPUInfo()
 {
-	m_pValueDict->setObject( CCString::create( (const char*)glGetString(GL_VENDOR)), "gl.vendor");
-	m_pValueDict->setObject( CCString::create( (const char*)glGetString(GL_RENDERER)), "gl.renderer");
-	m_pValueDict->setObject( CCString::create( (const char*)glGetString(GL_VERSION)), "gl.version");
+    const GLubyte* vendor = glGetString(GL_VENDOR);
+    const GLubyte* renderer = glGetString(GL_RENDERER);
+    const GLubyte* version = glGetString(GL_VERSION);
+    const GLubyte* extensions = glGetString(GL_EXTENSIONS);
 
-    m_pGlExtensions = (char *)glGetString(GL_EXTENSIONS);
+	m_pValueDict->setObject(CCString::create(vendor ? (const char*)vendor : "unknown"), "gl.vendor");
+	m_pValueDict->setObject(CCString::create(renderer ? (const char*)renderer : "unknown"), "gl.renderer");
+	m_pValueDict->setObject(CCString::create(version ? (const char*)version : "unknown"), "gl.version");
+
+    m_pGlExtensions = (char *)(extensions ? extensions : (const GLubyte*)"");
 
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &m_nMaxTextureSize);
 	m_pValueDict->setObject( CCInteger::create((int)m_nMaxTextureSize), "gl.max_texture_size");

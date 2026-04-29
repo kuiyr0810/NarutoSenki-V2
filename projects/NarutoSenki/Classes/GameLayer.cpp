@@ -171,6 +171,13 @@ void GameLayer::initGard()
 void GameLayer::initHeros()
 {
 	initTileMap();
+	if (currentMap == nullptr)
+	{
+		// initTileMap() failed (e.g. no map asset bundled). The error has
+		// already been surfaced to the user via CCMessageBox; bail out here
+		// instead of dereferencing the null tilemap below.
+		return;
+	}
 	initEffects();
 
 	addSprites("UI/hpBar/hpBar.plist");
@@ -181,6 +188,11 @@ void GameLayer::initHeros()
 	_isOugis2Game = true;
 
 	TMXObjectGroup *group = currentMap->objectGroupNamed("object");
+	if (group == nullptr)
+	{
+		CCMessageBox("Map is missing the 'object' layer", "[Error] Bad map");
+		return;
+	}
 	CCArray *objectArray = group->getObjects();
 
 	// 4v4 spawn layout
@@ -1193,4 +1205,11 @@ void GameLayer::LPFN_ACCELEROMETER_KEYHOOK(UINT message, WPARAM wParam, LPARAM l
 
 #endif
 
+#endif
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+bool GameLayer::checkHasAnyMovement()
+{
+	return false;
+}
 #endif

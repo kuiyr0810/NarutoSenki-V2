@@ -10,5 +10,7 @@
 	<key>LimitedChar</key>
 	<string>无法选择该角色</string>
 	<key>Notice</key>
-	<string>   火影战记-v2已于2020年11月1日开始更新，更多信息QQ群：806656456</string>
+	<string>   Naruto Senki - V2, developed by ZxAkito</string>
+	<key>ServerMainten</key>
+	<string>服务器维护中，请稍后再试</string>
 </dict>

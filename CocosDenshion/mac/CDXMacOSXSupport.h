@@ -1,3 +1,5 @@
+#ifndef CDXMACOSXSUPPORT_H
+#define CDXMACOSXSUPPORT_H
 /*
  Copyright (c) 2010 Steve Oldmeadow
  
@@ -40,15 +42,15 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSSound.h>
 
-enum AudioSessionProperties {
-	kAudioSessionProperty_OtherAudioIsPlaying,
-	kAudioSessionProperty_AudioRoute	
-};
+#import <CoreAudio/CoreAudioTypes.h>
+
 #ifdef __cplusplus
 extern "C" {
-#endif	
-	
-extern OSStatus AudioSessionGetProperty(UInt32 inID, UInt32 *ioDataSize, void *outData);    
+#endif
+
+#ifndef AudioSessionGetProperty
+extern OSStatus AudioSessionGetProperty(UInt32 inID, UInt32 *ioDataSize, void *outData);
+#endif
 
 #ifdef __cplusplus
 }
@@ -236,3 +238,5 @@ enum {
 @end
 
 #endif
+
+#endif /* CDXMACOSXSUPPORT_H */
