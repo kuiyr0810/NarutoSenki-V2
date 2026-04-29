@@ -168,6 +168,12 @@ public:
 	static bool checkHasAnyMovement();
 	static int getMapCount();
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+	static void keyEventHandle(GLFWwindow *window, int key, int scancode, int action, int modes);
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+	static void keyEventHandle(int key, int keyState);
+#endif
+
 private:
 	void onEnter();
 	void onExit();
@@ -177,8 +183,8 @@ private:
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX || CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 	int _lastPressedMovementKey;
-
-	static void keyEventHandle(GLFWwindow *window, int key, int scancode, int action, int modes);
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+	int _lastPressedMovementKey;
 #endif
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 	static void LPFN_ACCELEROMETER_KEYHOOK(UINT message, WPARAM wParam, LPARAM lParam);
