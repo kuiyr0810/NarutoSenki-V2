@@ -11,7 +11,15 @@
 #define isKeyDown(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 1 : 0)
 #define getKeyUp(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 0 : 1)
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+#if __has_include("glfw3.h")
 #include "glfw3.h"
+#elif __has_include(<GLFW/glfw3.h>)
+#include <GLFW/glfw3.h>
+#elif __has_include("glfw3/include/mac/glfw3.h")
+#include "glfw3/include/mac/glfw3.h"
+#else
+#error "GLFW header not found. Check include paths."
+#endif
 #define _isPressed(__WINDOW__, __KEY__) glfwGetKey(__WINDOW__, __KEY__)
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include "../../../cocos2dx/platform/android/jni/JniHelper.h"

@@ -91,21 +91,45 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
 void CCEGLView::setViewPortInPoints(float x , float y , float w , float h)
 {
     float frameZoomFactor = [[EAGLView sharedEGLView] frameZoomFactor];
+    float backingScaleFactor = 1.0f;
+    EAGLView *glView = [EAGLView sharedEGLView];
+    if (glView)
+    {
+        NSRect viewRect = [glView bounds];
+        NSRect backingRect = [glView convertRectToBacking:viewRect];
+        if (viewRect.size.width > 0.0f)
+        {
+            backingScaleFactor = backingRect.size.width / viewRect.size.width;
+        }
+    }
+    float viewportScale = frameZoomFactor * backingScaleFactor;
     
-    glViewport((GLint)(x * m_fScaleX * frameZoomFactor + m_obViewPortRect.origin.x * frameZoomFactor),
-               (GLint)(y * m_fScaleY * frameZoomFactor + m_obViewPortRect.origin.y * frameZoomFactor),
-               (GLsizei)(w * m_fScaleX * frameZoomFactor),
-               (GLsizei)(h * m_fScaleY * frameZoomFactor));
+    glViewport((GLint)(x * m_fScaleX * viewportScale + m_obViewPortRect.origin.x * viewportScale),
+               (GLint)(y * m_fScaleY * viewportScale + m_obViewPortRect.origin.y * viewportScale),
+               (GLsizei)(w * m_fScaleX * viewportScale),
+               (GLsizei)(h * m_fScaleY * viewportScale));
 }
 
 void CCEGLView::setScissorInPoints(float x , float y , float w , float h)
 {
     float frameZoomFactor = [[EAGLView sharedEGLView] frameZoomFactor];
+    float backingScaleFactor = 1.0f;
+    EAGLView *glView = [EAGLView sharedEGLView];
+    if (glView)
+    {
+        NSRect viewRect = [glView bounds];
+        NSRect backingRect = [glView convertRectToBacking:viewRect];
+        if (viewRect.size.width > 0.0f)
+        {
+            backingScaleFactor = backingRect.size.width / viewRect.size.width;
+        }
+    }
+    float viewportScale = frameZoomFactor * backingScaleFactor;
     
-    glScissor((GLint)(x * m_fScaleX * frameZoomFactor + m_obViewPortRect.origin.x * frameZoomFactor),
-              (GLint)(y * m_fScaleY * frameZoomFactor + m_obViewPortRect.origin.y * frameZoomFactor),
-              (GLsizei)(w * m_fScaleX * frameZoomFactor),
-              (GLsizei)(h * m_fScaleY * frameZoomFactor));
+    glScissor((GLint)(x * m_fScaleX * viewportScale + m_obViewPortRect.origin.x * viewportScale),
+              (GLint)(y * m_fScaleY * viewportScale + m_obViewPortRect.origin.y * viewportScale),
+              (GLsizei)(w * m_fScaleX * viewportScale),
+              (GLsizei)(h * m_fScaleY * viewportScale));
 }
 
 void CCEGLView::setMultiTouchMask(bool mask)

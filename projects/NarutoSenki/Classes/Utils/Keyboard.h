@@ -1,9 +1,17 @@
 #pragma once
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX) || (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX) || (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+#if __has_include("glfw3.h")
 #include "glfw3.h"
+#elif __has_include(<GLFW/glfw3.h>)
+#include <GLFW/glfw3.h>
+#elif __has_include("glfw3/include/mac/glfw3.h")
+#include "glfw3/include/mac/glfw3.h"
+#else
+#error "GLFW header not found. Check include paths."
+#endif
 
 /* The unknown key */
 #define KEY_UNKNOWN GLFW_KEY_UNKNOWN

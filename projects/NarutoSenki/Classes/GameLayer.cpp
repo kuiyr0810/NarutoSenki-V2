@@ -949,7 +949,15 @@ void GameLayer::clearAllUnitsMainTarget(CharacterBase *target)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 #define isPressed(__KEY__) _isPressed(__KEY__)
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
+#if __has_include("glfw3.h")
 #include "glfw3.h"
+#elif __has_include(<GLFW/glfw3.h>)
+#include <GLFW/glfw3.h>
+#elif __has_include("glfw3/include/mac/glfw3.h")
+#include "glfw3/include/mac/glfw3.h"
+#else
+#error "GLFW header not found. Check include paths."
+#endif
 #define isPressed(__KEY__) glfwGetKey(_window, __KEY__)
 #endif
 
@@ -1207,7 +1215,7 @@ void GameLayer::LPFN_ACCELEROMETER_KEYHOOK(UINT message, WPARAM wParam, LPARAM l
 
 #endif
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+#if !(CC_TARGET_PLATFORM == CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 bool GameLayer::checkHasAnyMovement()
 {
 	return false;
