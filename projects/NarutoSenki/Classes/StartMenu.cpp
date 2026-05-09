@@ -377,7 +377,8 @@ void StartMenu::onEnter()
 void StartMenu::onExit()
 {
 	Layer::onExit();
-	SimpleAudioEngine::sharedEngine()->end();
+	// Keep audio engine alive across scene transitions (e.g. Credits),
+	// otherwise newly started BGM can be cut off when StartMenu exits.
 }
 
 void StartMenu::onLoginBtn(Ref *sender)
