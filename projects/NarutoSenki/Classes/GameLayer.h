@@ -123,6 +123,7 @@ public:
 	void checkTower();
 
 	void onPause();
+	void resumeFromPause();
 	void onGear();
 	void playGameOpeningAnimation(float dt);
 	void onGameStart(float dt);

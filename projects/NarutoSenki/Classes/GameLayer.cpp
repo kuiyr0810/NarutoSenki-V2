@@ -733,6 +733,24 @@ void GameLayer::onPause()
 	Director::sharedDirector()->pushScene(pscene);
 }
 
+void GameLayer::resumeFromPause()
+{
+	if (!_isPause)
+		return;
+
+	if (UserDefault::sharedUserDefault()->getBoolForKey("isBGM"))
+	{
+		SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+	}
+	if (UserDefault::sharedUserDefault()->getBoolForKey("isVoice"))
+	{
+		SimpleAudioEngine::sharedEngine()->resumeAllEffects();
+	}
+
+	Director::sharedDirector()->popScene();
+	_isPause = false;
+}
+
 void GameLayer::onGear()
 {
 	if (!_enableGear)
@@ -1181,8 +1199,7 @@ void GameLayer::keyEventHandle(GLFWwindow *window, int key, int scancode, int ke
 		{
 			if (_gLayer->_isPause)
 			{
-				Director::sharedDirector()->popScene();
-				_gLayer->_isPause = false;
+				_gLayer->resumeFromPause();
 			}
 			else if (_gLayer->_isGear)
 			{
@@ -1196,8 +1213,18 @@ void GameLayer::keyEventHandle(GLFWwindow *window, int key, int scancode, int ke
 		}
 		break;
 	case KEY_SPACE:
-		if (_gLayer->_enableGear && _gLayer->_isStarted && keyState && !_gLayer->_isPause && !_gLayer->_isGear)
-			_gLayer->onGear(); // enter gear shop
+		if (_gLayer->_enableGear && _gLayer->_isStarted && keyState && !_gLayer->_isPause)
+		{
+			if (_gLayer->_isGear)
+			{
+				Director::sharedDirector()->popScene();
+				_gLayer->_isGear = false;
+			}
+			else
+			{
+				_gLayer->onGear(); // enter gear shop
+			}
+		}
 		break;
 	case KEY_F11:
 		// if (keyState)
@@ -1364,13 +1391,23 @@ void GameLayer::keyEventHandle(int key, int keyState)
 	case KEY_M:
 		if (keyState) _gLayer->_hudLayer->getItem2Button()->click(); break;
 	case KEY_SPACE:
-		if (_gLayer->_enableGear && _gLayer->_isStarted && keyState && !_gLayer->_isPause && !_gLayer->_isGear)
-			_gLayer->onGear();
+		if (_gLayer->_enableGear && _gLayer->_isStarted && keyState && !_gLayer->_isPause)
+		{
+			if (_gLayer->_isGear)
+			{
+				Director::sharedDirector()->popScene();
+				_gLayer->_isGear = false;
+			}
+			else
+			{
+				_gLayer->onGear();
+			}
+		}
 		break;
 	case KEY_ESCAPE: case KEY_ENTER:
 		if (keyState && _gLayer->_isStarted)
 		{
-			if (_gLayer->_isPause) { Director::sharedDirector()->popScene(); _gLayer->_isPause = false; }
+			if (_gLayer->_isPause) { _gLayer->resumeFromPause(); }
 			else if (_gLayer->_isGear) { Director::sharedDirector()->popScene(); _gLayer->_isGear = false; }
 			else { _gLayer->onPause(); }
 		}
