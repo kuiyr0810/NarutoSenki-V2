@@ -90,6 +90,7 @@ static EAGLView *view;
 //		NSOpenGLPFANoRecovery,
 		NSOpenGLPFADoubleBuffer,
 		NSOpenGLPFADepthSize, 24,
+		NSOpenGLPFAStencilSize, 8,
 		
 		0
     };
